@@ -3,6 +3,8 @@ gifmonster
 
 GIF Monster treats GIFs like Cookie Monster treats cookies.
 
+![Cookie Monster](https://cbley.s3.amazonaws.com/cookie_monster.gif)
+
 ## License
 
 The MIT License
