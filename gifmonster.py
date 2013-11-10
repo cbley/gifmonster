@@ -1,7 +1,10 @@
+import datetime
 import os
 import requests
 import redis
 import praw
+import pymongo
+import json
 
 output_dir = "gifs"
 
@@ -15,6 +18,19 @@ domain_whitelist = [
 
 r = redis.StrictRedis()
 p = praw.Reddit(user_agent='gifmonster')
+c = pymongo.MongoClient()
+db = c.gifmonster
+gifs = db.gifs
+errors = db.errors
+
+
+class GifFile:
+
+    def __init__(self, filename, url, size, timestamp):
+        self.filename = filename
+        self.url = url
+        self.size = size
+        self.timestamp = timestamp
 
 
 def should_download(post):
@@ -47,6 +63,10 @@ def download(post):
 
     with open(output_path, 'wb') as output_file:
         output_file.write(req.content)
+        stat = os.stat(output_path)
+        timestamp = datetime.datetime.fromtimestamp(stat.st_mtime)
+        gf = GifFile(filename, url, stat.st_size, timestamp)
+        gifs.insert(gf.__dict__)
 
 
 def get_gifs(sub_reddit):
